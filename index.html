@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>DRAW, PLEASE! | English Sketch Challenge</title>
+<style>
+:root{
+  --ink:#22304e;--violet:#6652db;--pink:#f9d6f2;--paper:#fffefa;--pale:#f7f2ff;
+  --line:#dcd4f1;--mint:#b9f4df;--bg1:#fff8ca;--bg2:#f3ebff;--bg3:#dff2ff;
+  --good:#34b67a;--warn:#f0a43b;--bad:#d45a7a;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:system-ui,-apple-system,'Malgun Gothic',sans-serif;
+  background:radial-gradient(circle at 10% 0%,var(--bg1),var(--bg2) 50%,var(--bg3));
+  color:var(--ink);
+}
+button,input{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid #1c78ed;outline-offset:3px}
+.app{max-width:1180px;margin:auto;padding:14px 18px 28px}
+.hide{display:none !important}
+.mast{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.logo{font-weight:1000;letter-spacing:.03em;font-size:clamp(21px,3vw,31px);color:#674cd8;text-shadow:2px 2px #fff}
+.logo span{color:#f05d8d}
+.sub{font-size:12px;color:#625c7a}
+.pill{border-radius:999px;background:#fff;border:2px solid #e3daff;padding:7px 13px;font-weight:750;font-size:13px}
+.start-card,.prompt,.album,.side-card,.modal-card{
+  background:var(--paper);border:3px solid #2f2c51;box-shadow:6px 7px 0 #b39de9;border-radius:20px;
+}
+.start-card{padding:22px 22px 20px;max-width:980px;margin:14px auto}
+.grid2{display:grid;grid-template-columns:1.2fr .9fr;gap:16px}
+.kicker{display:inline-block;background:#fff;border:2px solid #decfff;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:800;color:#6a55d7}
+h1.big{font-size:clamp(28px,4vw,45px);line-height:1.15;margin:12px 0 8px;letter-spacing:-.04em}
+.lead{font-size:16px;line-height:1.7;color:#514b63}
+.notice{background:#f8f5ff;border:2px dashed #cdbff6;border-radius:16px;padding:14px 15px}
+.notice ul{margin:8px 0 0 18px;padding:0}
+.notice li{margin:6px 0}
+.mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+.mini-box{background:#fff;border:2px solid #e6ddff;border-radius:14px;padding:12px 12px}
+.mini-title{font-size:13px;font-weight:900;color:#6a55d7;margin-bottom:6px}
+.start-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.big-btn,.action,.tool{
+  border:2px solid #302b5d;border-radius:12px;font-weight:900;
+}
+.big-btn{
+  background:#7761e4;color:#fff;padding:14px 18px;box-shadow:3px 3px #b1a1ec;font-size:17px;
+}
+.big-btn.alt{background:#fff;color:#4f4393;border-color:#d6caf7;box-shadow:none}
+.progress{display:flex;gap:6px;margin:8px 0 13px}
+.dot{height:9px;flex:1;background:#fff;border-radius:50px;border:1px solid #d5cef0;overflow:hidden}
+.dot.done{background:#53cfa5}
+.dot.current{background:#9d7fff}
+.prompt{padding:19px 18px 17px;text-align:center;position:relative}
+.prompt:before{content:'✦';position:absolute;left:18px;top:8px;color:#ff9fc0;font-size:22px}
+.prompt h1{font-size:clamp(22px,3.2vw,38px);line-height:1.25;margin:5px auto 6px;letter-spacing:-.03em}
+.prompt strong{color:#ed6193}
+.translation{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;color:#66627b;font-size:clamp(11px,1.5vw,14px)}
+.translation span{background:#f4f0ff;border-radius:10px;padding:4px 9px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 245px;gap:15px;margin-top:17px}
+.canvas-shell{border:3px solid #33304e;border-radius:18px;overflow:hidden;background:white;box-shadow:4px 5px 0 #bca9ed}
+.toolbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:10px 11px;background:#faf8ff;border-bottom:2px solid #e9e0fa}
+.tool{background:#fff;padding:7px 10px;font-size:13px;min-height:36px;border-color:#d9cef6}
+.tool.selected{background:#6853d4;color:#fff;border-color:#6853d4}
+.tool.danger{color:#bd3364}
+.swatch{width:30px;height:30px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #b8a9d8}
+.swatch.selected{box-shadow:0 0 0 3px #6044c8}
+.range-wrap{display:flex;align-items:center;gap:7px;background:#fff;padding:6px 10px;border:2px solid #ddd1f8;border-radius:12px}
+.range-wrap b{font-size:12px}
+#drawing{display:block;width:100%;height:auto;aspect-ratio:1.65/1;background:#fff;touch-action:none;cursor:crosshair}
+.canvas-footer{background:#f8f6fe;border-top:2px solid #eee7fa;padding:11px 13px;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.action{background:#7761e4;color:#fff;padding:12px 15px;box-shadow:3px 3px #b1a1ec}
+.action:hover,.big-btn:hover{filter:brightness(1.03)}
+.left-actions,.right-actions{display:flex;gap:8px;flex-wrap:wrap}
+.side-card{padding:12px 12px 14px}
+.side-card h3{font-size:14px;margin:6px 0 10px;color:#6a55d7}
+.list{display:flex;flex-direction:column;gap:7px}
+.item{
+  border:2px solid #dfd4fb;border-radius:14px;padding:9px 10px;background:#fff;
+  display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;font-size:13px
+}
+.item.current{border-color:#7a65e6;background:#f6f1ff}
+.item.done{border-color:#8fe0c0}
+.item .name{font-weight:800}
+.item .subtxt{font-size:11px;color:#726d85}
+.score-tag{font-weight:900;border-radius:999px;padding:5px 8px;font-size:11px;background:#f4f0ff}
+.thumb{margin-top:12px;border:2px dashed #d8cff4;border-radius:16px;padding:10px;background:#faf8ff;text-align:center}
+.thumb img{width:100%;aspect-ratio:1.25/1;object-fit:cover;background:#fff;border-radius:10px;border:1px solid #e8e1fb}
+.thumb p{margin:8px 0 0;font-size:12px;color:#716983}
+.overlay{
+  position:fixed;inset:0;background:rgba(27,23,52,.55);display:flex;align-items:center;justify-content:center;
+  padding:18px;z-index:30
+}
+.modal-card{max-width:500px;width:min(100%,500px);padding:20px}
+.modal-card h2{margin:0 0 8px;font-size:28px}
+.modal-card p{line-height:1.6}
+.preview{width:100%;aspect-ratio:1.45/1;border:2px solid #e4dcfb;background:#fff;border-radius:16px;object-fit:contain}
+.modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.album{padding:18px}
+.album h2{margin:0 0 5px}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:13px;margin-top:14px}
+.card{background:#fff;border:2px solid #ddd4fa;border-radius:18px;padding:10px}
+.card img{width:100%;aspect-ratio:1.3/1;object-fit:contain;background:#fff;border-radius:12px;border:1px solid #ebe5fb}
+.card .card-title{font-weight:900;margin-top:8px}
+.card .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
+.small{font-size:12px;color:#746e84}
+.feedback{font-weight:800;font-size:13px}
+.help-note{font-size:12px;color:#736d87;margin-top:10px}
+@media (max-width:980px){
+  .grid2,.layout{grid-template-columns:1fr}
+}
+
+/* concise multilingual first-page instructions */
+.intro-lang{display:grid;gap:10px;margin:17px 0}
+.intro-step{background:#fff;border:2px solid #e6ddff;border-radius:14px;padding:11px 15px;display:flex;flex-direction:column;gap:3px}
+.intro-step b{font-size:17px;color:#2a2850}
+.intro-step span{font-size:13px;color:#66627b}
+.intro-warning{background:#fff5e9;border:2px solid #f2d7a5;border-radius:14px;padding:10px 15px;display:flex;flex-wrap:wrap;align-items:center;column-gap:18px;row-gap:4px}
+.intro-warning b{font-size:15px}
+.intro-warning span{font-size:12px;color:#625c72}
+@media(min-width:800px){.intro-step{display:grid;grid-template-columns:1.22fr 1fr 1.3fr;align-items:center;gap:12px}.intro-step span{font-size:13px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="mast">
+    <div>
+      <div class="logo">DRAW, <span>PLEASE!</span></div>
+      <div class="sub">Can you please draw ~ ? · English Sketch Challenge</div>
+    </div>
+    <div class="pill" id="headerCount">준비</div>
+  </div>
+
+  <!-- Start screen -->
+  <section id="startScreen" class="start-card">
+    <span class="kicker">HOW TO PLAY · 게임 방법</span>
+    <h1 class="big">DRAW, PLEASE!</h1>
+    <div class="intro-lang">
+      <div class="intro-step"><b>1. 영어 단어를 보고 그림을 그리세요.</b><span>看英语单词并画图。</span><span>Посмотрите на английское слово и нарисуйте его.</span></div>
+      <div class="intro-step"><b>2. 그림을 다 그리면 채점하기를 누르세요.</b><span>画完后点击“评分”。</span><span>Когда закончите, нажмите «Оценить».</span></div>
+      <div class="intro-step"><b>3. 총 6문제! 원하는 그림은 다시 그릴 수 있어요.</b><span>共6题！可以重新画任意一题。</span><span>Всего 6 заданий! Любой рисунок можно перерисовать.</span></div>
+    </div>
+    <div class="intro-warning">
+      <b>✏️ 글씨 대신 그림으로 표현하세요!</b>
+      <span>不要写字，请画图！</span>
+      <span>Не пишите слова — рисуйте!</span>
+    </div>
+    <div class="start-actions">
+      <button class="big-btn" id="startBtn">게임 시작 ▶ · 开始游戏 · Начать игру</button>
+      <button class="big-btn alt" id="resetBtn">저장 기록 지우기</button>
+    </div>
+  </section>
+
+  <!-- Game screen -->
+  <section id="gameScreen" class="hide">
+    <div id="progress" class="progress"></div>
+    <div class="prompt">
+      <h1 id="promptText">Can you please draw <strong>air conditioner</strong>?</h1>
+      <div class="translation" id="translation"></div>
+    </div>
+
+    <div class="layout">
+      <div class="canvas-shell">
+        <div class="toolbar">
+          <button class="tool selected" id="penBtn">펜 Pen</button>
+          <button class="tool" id="eraserBtn">지우개 Eraser</button>
+          <div class="range-wrap"><b>굵기</b><input id="widthRange" type="range" min="2" max="24" step="1" value="5"></div>
+          <button class="swatch selected" data-color="#20233a" style="background:#20233a"></button>
+          <button class="swatch" data-color="#da4766" style="background:#da4766"></button>
+          <button class="swatch" data-color="#3270ff" style="background:#3270ff"></button>
+          <button class="swatch" data-color="#149b67" style="background:#149b67"></button>
+          <button class="swatch" data-color="#f39b12" style="background:#f39b12"></button>
+          <button class="tool" id="undo">되돌리기</button>
+          <button class="tool" id="redo">다시 실행</button>
+          <button class="tool danger" id="clear">전체 지우기</button>
+        </div>
+        <canvas id="drawing" width="990" height="600" aria-label="drawing canvas"></canvas>
+        <div class="canvas-footer">
+          <div class="left-actions">
+            <button class="action" id="submit">채점하기 ✓</button>
+            <button class="action" id="showAlbum">그림 앨범 보기 🖼</button>
+          </div>
+          <div class="right-actions">
+            <span id="strokes" class="pill">손가락이나 마우스로 그려 주세요!</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="side-card">
+        <h3>미션 목록</h3>
+        <div class="list" id="taskList"></div>
+        <div class="thumb">
+          <img id="thumbImg" alt="현재 그림 미리보기">
+          <p><b id="missionNo">01</b> · <span id="meaning">에어컨</span></p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Album screen -->
+  <section id="albumScreen" class="album hide">
+    <h2>그림 앨범</h2>
+    <p class="small">원하는 문제를 눌러 다시 그릴 수 있어요.</p>
+    <div class="gallery" id="gallery"></div>
+    <div class="start-actions">
+      <button class="big-btn" id="backToGame">게임으로 돌아가기</button>
+    </div>
+  </section>
+</div>
+
+<!-- score modal -->
+<div class="overlay hide" id="scoreModal">
+  <div class="modal-card">
+    <h2 id="scoreHeading">멋진 그림이에요!</h2>
+    <img class="preview" id="scorePreview" alt="score preview">
+    <p style="font-size:20px;font-weight:900;margin:10px 0 6px">점수: <span id="scoreValue">0점</span></p>
+    <p id="scoreDesc">현재 문제 최고점 0점!</p>
+    <p id="scoreFeedback" class="feedback"></p>
+    <div class="modal-actions">
+      <button class="big-btn" id="retryBtn">이 문제 다시 그리기</button>
+      <button class="big-btn" id="nextBtn">다음 문제 ➜</button>
+      <button class="big-btn alt" id="closeModal">닫기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const tasks = [
+  {en:'air conditioner',ko:'에어컨',zh:'空调',ru:'кондиционер'},
+  {en:'plastic cup',ko:'플라스틱 컵',zh:'塑料杯',ru:'пластиковый стакан'},
+  {en:'smoothie',ko:'스무디',zh:'冰沙',ru:'смузи'},
+  {en:'run',ko:'달리다',zh:'跑',ru:'бежать'},
+  {en:'turn off the water',ko:'물을 잠그다',zh:'关掉水龙头',ru:'закрыть кран'},
+  {en:'carry a box',ko:'상자를 옮기다',zh:'搬箱子',ru:'нести коробку'}
+];
+const STORAGE='drawPlease-v5';
+let current=0, mode='pen', color='#20233a', width=5, isDown=false, active=null, strokes=[], redoStack=[];
+let saved=tasks.map(()=>({strokes:[],score:null,feedback:''}));
+
+const $ = id => document.getElementById(id);
+const canvas = $('drawing');
+const ctx = canvas.getContext('2d', {willReadFrequently:true});
+
+function blank(){ ctx.fillStyle='#fff'; ctx.fillRect(0,0,canvas.width,canvas.height); }
+
+function safeLoad(){
+  try{
+    const v = JSON.parse(localStorage.getItem(STORAGE)||'null');
+    if(v && Array.isArray(v.saved) && v.saved.length===tasks.length){
+      saved = v.saved.map(x=>({
+        score:Number.isFinite(x.score)?Math.max(0,Math.min(100,x.score)):null,
+        feedback: typeof x.feedback==='string' ? x.feedback : '',
+        strokes:Array.isArray(x.strokes)?x.strokes.filter(s=>s&&Array.isArray(s.pts)&&s.pts.length<=10000).slice(0,600):[]
+      }));
+      current = Number.isInteger(v.current)?Math.max(0,Math.min(tasks.length-1,v.current)):0;
+    }
+  }catch(e){}
+}
+function persist(){ try{ localStorage.setItem(STORAGE, JSON.stringify({current,saved})) }catch(e){} }
+
+function drawPath(s, context=ctx){
+  if(!s || !s.pts || !s.pts.length) return;
+  context.save();
+  context.lineWidth = s.width || 5;
+  context.lineCap = 'round';
+  context.lineJoin = 'round';
+  context.strokeStyle = s.color || '#20233a';
+  context.globalCompositeOperation = s.eraser ? 'destination-out' : 'source-over';
+  context.beginPath();
+  context.moveTo(s.pts[0].x, s.pts[0].y);
+  if(s.pts.length===1){
+    context.lineTo(s.pts[0].x+.15, s.pts[0].y+.15);
+  }else{
+    for(let i=1;i<s.pts.length;i++) context.lineTo(s.pts[i].x, s.pts[i].y);
+  }
+  context.stroke();
+  context.restore();
+}
+
+function render(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  blank();
+  for(const s of strokes) drawPath(s);
+  if(active) drawPath(active);
+  const n = strokes.filter(s=>!s.eraser).length;
+  $('strokes').textContent = n ? `그린 획 ${n}개 · 원하는 만큼 수정할 수 있어요.` : '손가락이나 마우스로 그려 주세요!';
+  $('undo').disabled = strokes.length===0;
+  $('redo').disabled = redoStack.length===0;
+  $('thumbImg').src = makePreview(strokes);
+}
+
+function pos(e){
+  const r = canvas.getBoundingClientRect();
+  return {
+    x: Math.min(990, Math.max(0, (e.clientX-r.left)*990/r.width)),
+    y: Math.min(600, Math.max(0, (e.clientY-r.top)*600/r.height))
+  };
+}
+canvas.addEventListener('pointerdown',e=>{
+  e.preventDefault();
+  canvas.setPointerCapture(e.pointerId);
+  isDown=true;
+  active={color, eraser:mode==='eraser', width:mode==='eraser'?Math.max(20,width*4):width, pts:[pos(e)]};
+  render();
+});
+canvas.addEventListener('pointermove',e=>{
+  if(!isDown || !active) return;
+  active.pts.push(pos(e));
+  render();
+});
+function endPointer(){
+  if(!isDown || !active) return;
+  if(active.pts.length) strokes.push(active);
+  active=null; isDown=false; redoStack=[];
+  render();
+}
+canvas.addEventListener('pointerup',endPointer);
+canvas.addEventListener('pointercancel',endPointer);
+canvas.addEventListener('pointerleave',()=>{ if(isDown) endPointer(); });
+
+$('penBtn').onclick=()=>setMode('pen');
+$('eraserBtn').onclick=()=>setMode('eraser');
+function setMode(m){
+  mode=m;
+  $('penBtn').classList.toggle('selected',m==='pen');
+  $('eraserBtn').classList.toggle('selected',m==='eraser');
+}
+document.querySelectorAll('.swatch').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.swatch').forEach(x=>x.classList.remove('selected'));
+  b.classList.add('selected'); color=b.dataset.color; setMode('pen');
+});
+$('widthRange').oninput=e=>width=+e.target.value;
+$('undo').onclick=()=>{ if(strokes.length){ redoStack.push(strokes.pop()); render(); } };
+$('redo').onclick=()=>{ if(redoStack.length){ strokes.push(redoStack.pop()); render(); } };
+$('clear').onclick=()=>{ if(confirm('현재 문제 그림을 모두 지울까요?')){ strokes=[]; redoStack=[]; active=null; render(); } };
+
+function offscreenFromStrokes(list){
+  const off=document.createElement('canvas');
+  off.width=canvas.width; off.height=canvas.height;
+  const c=off.getContext('2d',{willReadFrequently:true});
+  c.fillStyle='#fff'; c.fillRect(0,0,off.width,off.height);
+  for(const s of list) drawPath(s,c);
+  return off;
+}
+
+function angleDiff(a,b){
+  let d=Math.abs(a-b);
+  while(d>Math.PI) d=Math.abs(d-2*Math.PI);
+  return d;
+}
+
+function calculateMetrics(list){
+  const drawStrokes = list.filter(s=>!s.eraser && s.pts && s.pts.length);
+  const off = offscreenFromStrokes(drawStrokes);
+  const c = off.getContext('2d',{willReadFrequently:true});
+  const data = c.getImageData(0,0,off.width,off.height).data;
+
+  let minX=off.width, minY=off.height, maxX=-1, maxY=-1;
+  let ink=0;
+  const sampleStep=2; // speed
+  for(let y=0;y<off.height;y+=sampleStep){
+    for(let x=0;x<off.width;x+=sampleStep){
+      const idx=(y*off.width+x)*4;
+      const r=data[idx], g=data[idx+1], b=data[idx+2], a=data[idx+3];
+      const dark = a>10 && (r+g+b<740);
+      if(dark){
+        ink++;
+        if(x<minX)minX=x; if(y<minY)minY=y; if(x>maxX)maxX=x; if(y>maxY)maxY=y;
+      }
+    }
+  }
+
+  if(ink===0) return {empty:true};
+
+  const bboxW=maxX-minX+1, bboxH=maxY-minY+1;
+  const bboxArea=Math.max(1,bboxW*bboxH);
+  const canvasArea=off.width*off.height;
+  const coverage=ink/canvasArea;
+  const fillRatio=ink/bboxArea;
+  const aspect=bboxW/Math.max(1,bboxH);
+
+  // grid occupancy
+  const cols=18, rows=12;
+  const grid=new Array(rows*cols).fill(0);
+  for(let gy=0; gy<rows; gy++){
+    for(let gx=0; gx<cols; gx++){
+      const sx=Math.floor(gx*off.width/cols), ex=Math.floor((gx+1)*off.width/cols);
+      const sy=Math.floor(gy*off.height/rows), ey=Math.floor((gy+1)*off.height/rows);
+      let found=0;
+      for(let y=sy; y<ey && !found; y+=3){
+        for(let x=sx; x<ex; x+=3){
+          const idx=(y*off.width+x)*4;
+          const r=data[idx], g=data[idx+1], b=data[idx+2], a=data[idx+3];
+          if(a>10 && (r+g+b<740)){ found=1; break; }
+        }
+      }
+      grid[gy*cols+gx]=found;
+    }
+  }
+  const cells = grid.reduce((a,b)=>a+b,0);
+  const activeRows = Array.from({length:rows},(_,r)=>grid.slice(r*cols,(r+1)*cols).some(Boolean)?1:0).reduce((a,b)=>a+b,0);
+  const activeCols = Array.from({length:cols},(_,c)=>grid.filter((_,i)=>i%cols===c).some(Boolean)?1:0).reduce((a,b)=>a+b,0);
+
+  let points=0, length=0, turns=0, tinyStrokeCount=0, drawStrokeCount=drawStrokes.length;
+  const strokeLens = [];
+  for(const s of drawStrokes){
+    points += s.pts.length;
+    let len=0;
+    let prevAng=null;
+    let localTurns=0;
+    for(let i=1;i<s.pts.length;i++){
+      const dx=s.pts[i].x-s.pts[i-1].x;
+      const dy=s.pts[i].y-s.pts[i-1].y;
+      const seg=Math.hypot(dx,dy);
+      len += seg;
+      if(seg>1.5){
+        const ang=Math.atan2(dy,dx);
+        if(prevAng!==null && angleDiff(prevAng, ang) > 0.5) localTurns++;
+        prevAng=ang;
+      }
+    }
+    if(len<55) tinyStrokeCount++;
+    strokeLens.push(len);
+    length += len;
+    turns += localTurns;
+  }
+  const avgStrokeLen = strokeLens.length ? strokeLens.reduce((a,b)=>a+b,0)/strokeLens.length : 0;
+  const longStrokeCount = strokeLens.filter(v=>v>140).length;
+
+  // text-like / line-like heuristics
+  const lineLike = (activeRows<=2 && activeCols>=6) || (activeCols<=2 && activeRows>=5) || (bboxH<28 || bboxW<28);
+  const textLike = (
+    (aspect>4.8 && activeRows<=4 && drawStrokeCount>=4) ||
+    (activeCols>=8 && activeRows<=3 && drawStrokeCount>=4) ||
+    (tinyStrokeCount>=Math.max(4, drawStrokeCount*0.7) && avgStrokeLen<70 && bboxW>150)
+  );
+
+  return {
+    empty:false, ink, bboxW, bboxH, bboxArea, coverage, fillRatio, aspect, cells, activeRows, activeCols,
+    points, length, turns, drawStrokeCount, tinyStrokeCount, avgStrokeLen, longStrokeCount, lineLike, textLike
+  };
+}
+
+// 단어마다 서로 다른 윤곽 특징을 점수화합니다. 실제 AI 이미지 인식은 아닙니다.
+function strokeFeatures(list){
+ const arr=list.filter(s=>!s.eraser&&s.pts?.length>=2).map(s=>{
+   const p=s.pts; let mnx=Infinity,mny=Infinity,mxx=-Infinity,mxy=-Infinity,len=0;
+   let hor=0,ver=0,diag=0;
+   for(let j=0;j<p.length;j++){
+     const pt=p[j];mnx=Math.min(mnx,pt.x);mny=Math.min(mny,pt.y);mxx=Math.max(mxx,pt.x);mxy=Math.max(mxy,pt.y);
+     if(j){const dx=pt.x-p[j-1].x,dy=pt.y-p[j-1].y,l=Math.hypot(dx,dy);len+=l;
+       if(Math.abs(dx)>Math.abs(dy)*1.4)hor+=l;else if(Math.abs(dy)>Math.abs(dx)*1.4)ver+=l;else diag+=l;}
+   }
+   const w=Math.max(1,mxx-mnx),h=Math.max(1,mxy-mny);
+   return {x:mnx,y:mny,w,h,cx:mnx+w/2,cy:mny+h/2,len,closed:len>75&&Math.hypot(p[0].x-p.at(-1).x,p[0].y-p.at(-1).y)<Math.max(20,Math.min(w,h)*.18),hor:hor/(len||1),ver:ver/(len||1),diag:diag/(len||1)};
+ });
+ return {arr,closed:arr.filter(a=>a.closed).length, horizontal:arr.filter(a=>a.w>a.h*2&&a.len>70).length,vertical:arr.filter(a=>a.h>a.w*2&&a.len>70).length,rounded:arr.filter(a=>a.closed&&a.w/a.h>.55&&a.w/a.h<1.8).length};
+}
+function featureScore(m, sf, index){
+ const a=sf.arr,closed=sf.closed,hor=sf.horizontal,ver=sf.vertical,round=sf.rounded;
+ let score=0;const notes=[];const add=(v,yes,msg)=>{if(yes){score+=v;notes.push(msg)}};
+ // 50점의 핵심 특징 평가: 단어별 형태적 단서 조합
+ if(index===0){ // air conditioner: 가로 긴 본체 + 아래의 송풍구/바람
+   add(13,m.aspect>1.25&&m.aspect<5,'가로로 긴 본체');
+   add(10,hor>=1||m.drawStrokeCount>=3,'가로 테두리 또는 송풍구');
+   add(9,closed>=1,'에어컨 본체 윤곽');
+   add(9,ver>=2||m.turns>=12,'아래쪽 세부 선/바람 표현');
+   add(9,m.bboxW>180&&m.bboxH>105,'본체와 주변의 형태');
+ }else if(index===1){ // plastic cup
+   add(12,m.aspect>.38&&m.aspect<1.55,'컵처럼 세로로 선 형태');
+   add(11,closed>=1,'컵 윤곽');
+   add(9,hor>=1||m.turns>=9,'컵의 윗부분/입구');
+   add(9,ver>=1||m.bboxH>170,'컵의 옆면');
+   add(9,m.drawStrokeCount>=3,'뚜껑·빨대 등 추가 요소');
+ }else if(index===2){ // smoothie
+   add(11,m.aspect>.4&&m.aspect<1.65,'음료 컵의 형태');
+   add(9,closed>=1,'컵 또는 음료의 윤곽');
+   add(10,m.drawStrokeCount>=4,'빨대·뚜껑 등 부분 표현');
+   add(10,m.turns>=15||round>=2,'곡선 장식 또는 음료 표현');
+   add(10,m.bboxH>160&&m.cells>12,'음료의 크기와 표현');
+ }else if(index===3){ // run
+   add(10,m.aspect>.38&&m.aspect<2,'인물의 전체 비율');
+   add(10,round>=1||closed>=1,'머리나 몸 윤곽');
+   add(11,m.drawStrokeCount>=5,'팔·다리 등 여러 부분');
+   add(9,m.turns>=10&&m.bboxH>140,'움직이는 자세');
+   add(10,sf.arr.some(a=>a.diag>.25)||m.turns>=18,'기울어진 움직임 선');
+ }else if(index===4){ // turn off the water
+   add(11,hor>=1||m.aspect>.9,'수도꼭지의 가로 구조');
+   add(9,ver>=1,'물줄기나 수도관');
+   add(9,closed>=1,'수도꼭지·손잡이 윤곽');
+   add(11,m.drawStrokeCount>=5,'손·수도꼭지·물 등 여러 요소');
+   add(10,m.turns>=15&&m.cells>=12,'잠그는 동작의 표현');
+ }else{ // carry a box
+   add(12,closed>=1,'상자 윤곽');
+   add(11,hor>=1||ver>=1,'상자의 직선 면');
+   add(9,m.drawStrokeCount>=5,'사람과 상자의 여러 부분');
+   add(9,m.turns>=14,'팔·다리 등 추가 표현');
+   add(9,m.bboxW>160&&m.bboxH>170,'사람과 상자의 넓은 형태');
+ }
+ return {score,notes};
+}
+function gradeMetrics(m,sf,index){
+ if(m.empty)return {score:0,key:0,clarity:0,finish:0,effort:0,feedback:'그림을 그린 뒤 채점해 보세요!'};
+ if(m.textLike)return {score:0,key:0,clarity:0,finish:0,effort:0,feedback:'글씨처럼 보이는 그림은 채점하지 않아요. 단어를 그림으로 표현해 보세요.'};
+ if(m.length<70||m.ink<100||m.points<9)return {score:8,key:0,clarity:0,finish:4,effort:4,feedback:'아직 선이 너무 적어요. 그림을 조금 더 그려 보세요.'};
+ const feature=featureScore(m,sf,index);
+ let key=feature.score;
+ let clarity=Math.round(Math.min(20,3+Math.min(7,m.cells*.32)+Math.min(5,m.length/300)+Math.min(5,m.turns*.3)));
+ let finish=Math.round(Math.min(20,2+Math.min(7,m.cells*.30)+Math.min(6,m.drawStrokeCount*.72)+Math.min(5,m.longStrokeCount*1.5)));
+ let effort=Math.round(Math.min(10,Math.min(4,m.length/350)+Math.min(3,m.drawStrokeCount*.6)+Math.min(3,m.cells*.2)));
+ // 작은 선/한 획은 절대 고득점이 나오지 않도록
+ let score=key+clarity+finish+effort;
+ let cap=100;
+ if(m.lineLike)cap=Math.min(cap,35);
+ if(m.cells<5)cap=Math.min(cap,30);
+ if(m.drawStrokeCount===1)cap=Math.min(cap,45);
+ if(m.drawStrokeCount===2)cap=Math.min(cap,66);
+ if(m.bboxW<90||m.bboxH<70)cap=Math.min(cap,48);
+ if(m.length<220)cap=Math.min(cap,42);
+ if(m.length<420)cap=Math.min(cap,65);
+ if(m.drawStrokeCount<4)cap=Math.min(cap,76);
+ if(m.tinyStrokeCount>=Math.max(5,m.drawStrokeCount*.8))cap=Math.min(cap,54);
+ score=Math.round(Math.min(cap,Math.max(5,score)));
+ let feedback;
+ if(score<30)feedback='선과 모양을 더 그려 보세요. 글자보다는 물건이나 동작의 모습을 표현해요.';
+ else if(score<55)feedback='시작은 좋아요! 제시어의 특징을 한두 개 더 추가해 보세요.';
+ else if(score<70)feedback='그림이 어느 정도 완성됐어요. 큰 특징이 조금 더 분명하면 좋아요.';
+ else if(score<85)feedback='좋아요! 제시어의 주요 특징들이 어느 정도 표현됐어요.';
+ else feedback='아주 잘했어요! 특징을 다양한 선과 형태로 표현했네요.';
+ return {score,key,clarity,finish,effort,feedback,notes:feature.notes};
+}
+function calculate(){return gradeMetrics(calculateMetrics(strokes),strokeFeatures(strokes),current)}
+
+function makePreview(list){
+  const off=offscreenFromStrokes(list);
+  return off.toDataURL('image/png');
+}
+
+function submit(){
+  render();
+  const result = calculate();
+  if(result.score===0){
+    alert('그림을 조금만 그린 뒤 채점해 보세요!');
+    return;
+  }
+  const old = saved[current].score;
+  saved[current].score = old===null ? result.score : Math.max(old, result.score);
+  saved[current].feedback = result.feedback;
+  saved[current].strokes = structuredClone(strokes);
+  persist();
+  $('scoreValue').textContent = result.score + '점';
+  $('scorePreview').src = makePreview(strokes);
+  $('scoreHeading').textContent = result.score >= 90 ? '정말 잘했어요! 🎉' : result.score >= 70 ? '멋진 그림이에요!' : '한 번 더 도전해 볼까요?';
+  $('scoreDesc').textContent = old!==null && old>result.score
+    ? `이번 점수 ${result.score}점 · 기존 최고점 ${old}점 유지!`
+    : `현재 문제 최고점 ${saved[current].score}점!`;
+  $('scoreFeedback').textContent = result.feedback + (result.score>0 ? ` · 핵심 특징 ${result.key}/50 · 전달력 ${result.clarity}/20 · 완성도 ${result.finish}/20 · 노력 ${result.effort}/10` : '');
+  $('nextBtn').textContent = current===tasks.length-1 ? '그림 앨범 보기 🖼' : '다음 문제 ➜';
+  $('scoreModal').classList.remove('hide');
+  updateSidebar();
+  buildGallery();
+}
+$('submit').onclick = submit;
+
+function taskItemHTML(i){
+  const s=saved[i];
+  const klass = i===current ? 'item current' : s.score!==null ? 'item done' : 'item';
+  const score = s.score===null ? '미채점' : s.score+'점';
+  return `<button class="${klass}" data-go="${i}">
+      <div><div class="name">${String(i+1).padStart(2,'0')}. ${tasks[i].en}</div><div class="subtxt">${tasks[i].ko}</div></div>
+      <div class="score-tag">${score}</div>
+    </button>`;
+}
+
+function updateSidebar(){
+  $('taskList').innerHTML = tasks.map((_,i)=>taskItemHTML(i)).join('');
+  document.querySelectorAll('[data-go]').forEach(btn=>btn.onclick=()=>{
+    loadIndex(+btn.dataset.go);
+  });
+}
+
+function renderProgress(){
+  $('progress').innerHTML = tasks.map((_,i)=>`<div class="dot ${i<current?'done':''} ${i===current?'current':''}"></div>`).join('');
+}
+
+function loadIndex(i){
+  current=i;
+  strokes=structuredClone(saved[i].strokes||[]);
+  redoStack=[]; active=null; isDown=false;
+  $('promptText').innerHTML = 'Can you please draw <strong>'+tasks[i].en+'</strong>?';
+  $('translation').innerHTML = `
+    <span>한국어 · ${tasks[i].ko}을(를) 그려 줄래?</span>
+    <span>中文 · 请画出${tasks[i].zh}，好吗？</span>
+    <span>Русский · Нарисуй, пожалуйста: ${tasks[i].ru}</span>`;
+  $('missionNo').textContent = String(i+1).padStart(2,'0');
+  $('meaning').textContent = tasks[i].ko;
+  $('headerCount').textContent = (i+1)+' / '+tasks.length;
+  renderProgress();
+  updateSidebar();
+  render();
+  persist();
+  show('game');
+}
+
+function show(which){
+  $('startScreen').classList.toggle('hide', which!=='start');
+  $('gameScreen').classList.toggle('hide', which!=='game');
+  $('albumScreen').classList.toggle('hide', which!=='album');
+  if(which==='start') $('headerCount').textContent='준비';
+  if(which==='album') $('headerCount').textContent='앨범';
+}
+
+function buildGallery(){
+  const gallery=$('gallery');
+  gallery.innerHTML = tasks.map((t,i)=>{
+    const img = saved[i].strokes && saved[i].strokes.length ? makePreview(saved[i].strokes) : '';
+    const score = saved[i].score===null ? '미채점' : saved[i].score+'점';
+    const fb = saved[i].feedback || '';
+    return `<div class="card">
+      <img src="${img || ''}" alt="${t.en}">
+      <div class="card-title">${String(i+1).padStart(2,'0')}. ${t.en}</div>
+      <div class="small">${t.ko}</div>
+      <div class="row">
+        <span class="score-tag">${score}</span>
+        <button class="tool" data-album-go="${i}">다시 그리기</button>
+      </div>
+      <div class="feedback">${fb}</div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('[data-album-go]').forEach(btn=>btn.onclick=()=>{
+    loadIndex(+btn.dataset.albumGo);
+  });
+}
+
+$('startBtn').onclick=()=>loadIndex(current);
+$('showAlbum').onclick=()=>{ buildGallery(); show('album'); };
+$('backToGame').onclick=()=>show('game');
+$('retryBtn').onclick=()=>{ $('scoreModal').classList.add('hide'); };
+$('closeModal').onclick=()=>{ $('scoreModal').classList.add('hide'); };
+$('nextBtn').onclick=()=>{
+  $('scoreModal').classList.add('hide');
+  if(current<tasks.length-1) loadIndex(current+1);
+  else { buildGallery(); show('album'); }
+};
+
+$('resetBtn').onclick=()=>{
+  if(confirm('저장된 그림과 점수를 모두 지울까요?')){
+    localStorage.removeItem(STORAGE);
+    saved=tasks.map(()=>({strokes:[],score:null,feedback:''}));
+    current=0; strokes=[]; redoStack=[]; active=null;
+    updateSidebar(); buildGallery(); render(); show('start');
+  }
+};
+
+safeLoad();
+blank();
+updateSidebar();
+buildGallery();
+render();
+show('start');
+</script>
+</body>
+</html>
